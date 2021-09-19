@@ -3,7 +3,8 @@
     <div>
       <img alt="Vue logo" src="../assets/logo.png" />
     </div>
-    <div>{{ calendar.year }} 年 {{ calendar.month }} 月</div>
+    <div>西元 {{ calendar.year }} 年 {{ calendar.month }} 月</div>
+    <div>民國 {{ rocYear }} 年</div>
 
     <div>
       <button type="button" @click="adjustYear(-1)">上一年</button>
@@ -23,9 +24,21 @@
         <li>六</li>
       </ul>
       <div class="week-body">
-        <div v-for="item in monthData" :key="item" class="week-body__list">
+        <div
+          v-for="item in monthData"
+          :key="item"
+          class="week-body__list"
+          :class="{ notMonth: item.month !== calendar.month }"
+        >
           <div>
-            <div>
+            <div
+              :class="{
+                today:
+                  item.year === today.year &&
+                  item.month === today.month &&
+                  item.date === today.date,
+              }"
+            >
               {{ item.date }}
             </div>
           </div>
@@ -96,7 +109,7 @@ export default {
       // 這個月的第一天
       const date = new Date(this.calendar.year, this.calendar.month - 1, 1);
       // this.calendar.month - 1 要記得 minus 1
-      console.log(date.getDay());
+      // console.log(date.getDay());
       return date.getDay();
     },
     monthFormFirst() {
@@ -115,6 +128,7 @@ export default {
       };
     },
     monthData() {
+      // 整理出來的資料
       const monthData = [];
       for (let i = 0; i < 42; i++) {
         let date = new Date(
@@ -131,6 +145,25 @@ export default {
       }
       return monthData;
     },
+    rocYear() {
+      return this.calendar.year - 1911;
+    },
+    // judgeToday() {
+    //   // 判斷是否為今日，拿 today 出來對比
+    //   let str;
+    //   this.monthData.forEach((item) => {
+    //     if (
+    //       item.year === this.today.year &&
+    //       item.month === this.today.month &&
+    //       item.date === this.today.date
+    //     ) {
+    //       str = `${item.year}/${item.month}/${item.date}`;
+    //       // return `${item.year}/${item.month}/${item.date}`;
+    //     }
+    //   });
+    //   return str;
+    // },
+    // judgeMonth() {},
   },
 };
 
@@ -142,11 +175,10 @@ export default {
   - 實作切換功能，並且注意範圍
   - 資料的部分、功能處理後 >> 畫面
   - 中間四周 + 頭尾兩周 (大多的日曆) >> 應如果每月的 1 號是星期六 (畫面先渲染)
-  - 要知道這個月的第一天是什麼 ? 並且推算出這個月欄位的第一格是什麼 
+  - 要知道這個月的第一天是什麼 ? 並且推算出這個月欄位的第一格是什麼
   - 從第一格跑迴圈渲染出 42 格的日期資料 v-for render
   - 調整畫面 (class: 當天、非當月的狀況 ... )
-
-  - 西元轉民國 公式
+  - 民國 = 西元 - 1911
 */
 </script>
 
@@ -173,6 +205,10 @@ export default {
     flex-grow: 1;
     position: relative;
 
+    &.notMonth {
+      background-color: #eee;
+    }
+
     > div {
       height: 90px;
       line-height: 30px;
@@ -189,6 +225,10 @@ export default {
         border-bottom: solid 1px #ccc;
         width: 30px;
         height: 30px;
+        &.today {
+          background-color: #000;
+          color: #fff;
+        }
       }
     }
   }
